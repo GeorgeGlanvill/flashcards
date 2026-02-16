@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Trainer</title>
+
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.container {
+    width: 95%;
+    max-width: 500px;
+}
+
+.word {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.definition {
+    display: none;
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #444;
+}
+
+button {
+    padding: 12px 16px;
+    margin: 6px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.primary { background: #111; color: white; }
+
+.topbar {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div id="progress"></div>
+    <button onclick="shuffleDeck()">Shuffle</button>
+</div>
+
+<div class="container">
+    <div class="word" onclick="reveal()"></div>
+    <div class="definition"></div>
+
+    <div id="revealBtn">
+        <button class="primary" onclick="reveal()">Reveal</button>
+    </div>
+
+    <div id="nextBtn" style="display:none;">
+        <button class="primary" onclick="nextCard()">Next</button>
+    </div>
+</div>
+
+<script>
+const flashcards = [['salacious', 'conveying an inappropriate interest in sexual matter'], ['bodice', 'the close fitting upper part of a dress covering the chest and back above the waist'], ['saccharine', 'excessively sweet or sentimental'], ['trite', 'lacking originality, dull on account of overuse'], ['expedite', 'make an action happen sooner'], ['extirpate', 'eradicate or destroy completely colour'], ['apostate', 'someone who renounces religious or political belief or principle'], ['vernacular', 'dialect spoken by ordinary people in a region'], ['externality', 'a consequence of an activity that affects other parties without being reflected in market prices'], ['pastiche', 'noun: an artistic work that imitates another, verb: to imitate the style of another art work'], ['ersatz', 'not genuine; used as a substitute, typically inferior'], ['perambulate', 'walk, especially in a leisurely way'], ['vixen', 'a female fox, used to describe an attractive woman'], ['profligacy', 'extravagant wastefulness'], ['roister', 'noisy and boisterous merrymaking'], ['epicure', 'someone who appreciates fine food and drink'], ['esurient', 'extremely hungry for something'], ['comestible', 'safe to be eaten'], ['agentic', 'having the capacity to act independently'], ['extirpate', 'destroy completely'], ['urbane', 'courteous and refined in manner'], ['larceny', 'theft'], ['insalubrious', '(of a place) seedy and run-down'], ['sardonic', 'grimly mocking or cynical'], ['hubris', 'excessive pride or self-confidence'], ['pride', 'proudness'], ['capacious', 'spacious'], ['raconteur', 'person who is good at anecdotes'], ['badinage', 'witty conversation'], ['apocryphal', 'of doubtful authenticity despite being widely circulated as true'], ['histrionic', 'excessively theatrical and melodramatic'], ['melodrama', 'something with exaggerated content designed to appeal to the emotions'], ['zealot', 'someone fanatical and uncompromising in pursuit of their ideals'], ['debonair', 'confident, stylish, charming'], ['antipathy', 'a deep-seated feeling of aversion'], ['venal', 'showing or motivated by susceptibility to bribery, corrupt'], ['chicanery', 'deception or subterfuge'], ['contrived', 'deliberately created rather than arising naturally'], ['hegemony', 'leadership or dominance by one over the rest'], ['capricious', 'given to sudden and unaccountable changes of mood and behaviour'], ['paragon', 'a person or thing regarded as a perfect example of a particular quality'], ['lugubrious', 'looking or sounding sad and dismal'], ['patrician', 'belonging to or characteristic of the aristocracy'], ['lassez-faire', 'policy of leaving things to take their own course without interfering'], ['pejorative', 'expressing contempt or disapproval'], ['purview', 'scope of influence or concern'], ['replete', 'very full or supplied'], ['prerogative', 'a right held due to a position of status'], ['apogee', 'the highest point in the development of something'], ['platitude', "a remark with a moral meaning that has been so overused that it's no longer meaningful"], ['porcine', 'relating to pigs'], ['prophetic', 'predicting what will happen in the future'], ['confound', 'confuse by not according by expectations or mixing two things up'], ['enervate', 'drain of energy'], ['self-effacing', 'not claiming attention for oneself'], ['sangfroid', 'composure in danger'], ['meek', 'submissive, quiet, gentle'], ['Albion', 'literary term for Britain / England'], ['gopping', 'horrible'], ['acrimony', 'bitterness or ill-feeling'], ['countenance', 'facial expression, support'], ['quixotic', 'extremely idealistic, unrealistic and impractical'], ['passerine', 'order of birds that have feet for perching, including all songbirds'], ['hootenanny', 'informal gathering with folk music'], ['lugubrious', 'looking or sounding sad and dismal'], ['couth', 'cultured, refined, well mannered'], ['cad', 'a man who behaves dishonourably, especially towards women'], ['vice', 'immoral or wicked behaviour or characteristics'], ['fervently', 'enthusiastically or passionately'], ['perspicacious', 'having a ready insight into and understanding of things'], ['vulcanise', 'harden'], ['ostensibly', 'apparently, as appears but not necessarily'], ['foppish', "concerned with one's clothes and appearance"], ['precocious', 'having developed abilities or inclinations at an earlier age than is usual'], ['shrill', 'high-pitched and piercing'], ['portent', 'a sign that a momentous event is likely to happen'], ['portentous', 'of momentous significance'], ['mercantile', 'commercial'], ['venerable', 'accorded a great deal of respect, especially because of age, wisdom or character'], ['emulation', 'effort to match or surpass a person or achievement, typically by imitation'], ['fallible', 'capable of making mistakes or being wrong'], ['zeitgeist', 'the defining spirit of mood of a period'], ['quotidian', 'of or occurring every day'], ['floccinaucinihilipilification', 'the action of estimating something as worthless'], ['pogrom', 'massacre of a particular ethnic group'], ['journeyman', 'someone who is reliable but not outstanding'], ['ramshackle', 'in a state of sever disrepair'], ['chauvinistic', "displaying aggressive patriotism; displaying excessive or prejudiced support for one's own group, in particular showing male prejudice against women"], ['glib', 'fluent but insincere and shallow'], ['anachronistic', 'belonging to a period other than that being portrayed'], ['nugatory', 'of no value or importance'], ['ventricose', 'having a large or protruding stomach'], ['droll', 'curious in a way that provokes dry amusement'], ['acerbic', 'sharp and forthright speaking'], ['allegory', 'a story or similar that can be interpreted to have a hidden meaning, typically moral or political'], ['altruistic', 'showing a disinterested and selfless concern for the well-being of others'], ['ambivalent', 'having mixed feelings or contradictory ideas about something'], ['androgynous', 'partly male and partly female in appearance'], ['anecdote', 'a short and amusing story about a real person or incident'], ['animosity', 'strong hostility'], ['aplomb', 'self-confidence or assurance, when in a demanding situation'], ['apotheosis', 'the highest point in the development of something'], ['aprosexia', 'abnormal inability to sustain attention'], ['arbitrary', 'based on random choice or personal whim, rather than any reason or system'], ['assimilate', 'to take in or fully understand, regard as similar or liken'], ['astute', "having an ability to accurately assess a situation or person and turn this to one's advantage"], ['auspicious', 'conducive to success'], ['authentic', 'of undisputed origin and not a copy, genuine'], ['auto didact', 'self-taught person'], ['balmy', 'characterized by pleasantly warm weather'], ['banal', 'obvious and boring due to lack of originality'], ['beguile', 'charm or enchant someone, often in a deceptive way'], ['behove', 'duty or responsibility to do something, befit'], ['belligerent', 'hostile and aggressive, or a nation or person engaged in a war'], ['benevolent', 'well-meaning and kindly'], ['beseech', 'ask urgently and fervently to do something'], ['bien pensant', 'conventional or orthodox'], ['biota', 'plant and animal life of a region'], ['blandiloquent', 'spoken in a mild, flattering manner'], ['blasé', 'unimpressed with or indifferent to something because one has experienced or seen it so often'], ['brevity', 'concise and exact use of words in writing or speech'], ['bucolic', 'relating to the pleasant aspects of the countryside and country life'], ['bumptious', 'irritatingly self-assertive'], ['cadence', 'motion or flow of events, rhythm'], ['callous', 'an insensitive and cruel disregard for others'], ['candour', 'being open and honest, frank'], ['cantankerous', 'bad tempered, argumentative or uncooperative'], ['capitulation', 'ceasing to resist an opponent or demand'], ['catharsis', 'the process of releasing, and thereby providing relief from, strong or repressed emotions'], ['charlatan', 'a person falsely claiming to have special knowledge or skill'], ['chutzpah', 'extreme self-confidence or audacity'], ['churlish', 'rude in a mean spirited way'], ['circumspect', 'wary and unwilling to take risks'], ['clandestine', 'done secretly because illicit'], ['cognoscenti', 'people who are especially well informed about a subject'], ['concubine', 'a mistress'], ['conjecture', 'an opinion formed on the basis of incomplete information'], ['contemporary', 'occurring at the same time, occurring in the present'], ['contingent', 'subject to chance or existing only if certain circumstances are the case'], ['contingency', 'provision for a possible uncertain event'], ['contrarian', 'opposing current fashion'], ['contrive', 'create or bring about by deliberate use of skill or manage to do something foolish'], ['conviction', 'showing that one firmly believes of what one says'], ['convivial', 'friendly, lively and enjoyable'], ['cosmopolitan', 'including people from many different countries'], ['coy', 'making a pretence of shyness or modesty intended to be alluring or reluctant to give details of something sensitive'], ['crass', 'showing no intelligence or sensitivity'], ['cretin', 'stupid person'], ['cynical', "distrust of integrity, concerned only with one's own interests"], ['dabbawalla', 'Indians who deliver lunch'], ['Daktari', 'style of clothing worn by Europeans in Africa'], ['debauched', 'indulging in or characterized by excessive indulgence in sex, alcohol or drugs'], ['deceit', 'the action of deceiving someone by concealing or misrepresenting the truth'], ['defenestrate', 'throw out of a window'], ['deference', 'polite submission or respect'], ['dejection', 'sad or depressed state, low spirits'], ['delineated', 'describe or portray something precisely'], ['demagogue', 'a political leader who seeks support by appealing to the desires and prejudices of ordinary people rather than by using rational argument'], ['derivative', "imitative of another person's work, usually negative. Based on someone's else's work"], ['despondency', 'low spirits from lack of hope or courage'], ['deus-ex-machina', 'god from the machine, person or thing introduced suddenly and unexpectedly solves an insoluble difficulty'], ['dilapidated', '(of a building) in a state of disrepair because of neglect'], ['disdain', 'the feeling that something is unworthy of consideration or respect'], ['disposition', "a person's inherent qualities of mind and character, inclination or tendency"], ['dogmatic', 'inclined to lay down principles as undeniably true'], ['duplicitous', 'deceitful'], ['earnest', 'resulting from or showing sincere and intense conviction'], ['eccentric', 'unconventional'], ['echelon', 'level or rank, eg in a ladder of something'], ['eejit', 'idiot'], ['effete', 'feminine behaviour, no longer capable of effective action'], ['efficacious', '(of something inanimate or abstract) successful in producing a desired result, effective'], ['egregious', 'outstandingly bad; shocking'], ['erudite', 'having or showing great knowledge'], ['emaciated', 'abnormally thin or weak, particularly because of illness or hunger'], ['emetic', 'causes vomiting'], ['enigmatic', 'difficult to understand, mysterious'], ['epithet', 'an adjective or phrase expressing a quality or attribute regarded as characteristic of the person or thing mentioned'], ['epoch', 'the beginning of something'], ['eponymous', 'giving their name to something'], ['esoteric', 'intended / likely to only be understood by people with knowledge / interest'], ['ethereal', 'being very delicate and light in a way that seems not to be of this world'], ['exonerate', '(of an official body) absolve (someone) from blame for a fault or wrongdoing.'], ['expedite', 'make an action happen sooner'], ['exposition', 'a comprehensive description of an idea or theory'], ['facetious', 'treating serious issues with deliberately inappropriate humour'], ['fastidious', 'very concerned of accuracy'], ['feign', 'pretend to be affected by'], ['fogeyish', 'out of touch'], ['fortuitous', 'happening by chance rather than intention'], ['fraternity', 'a group of people sharing a common profession or interest, friendship or mutual support'], ['Freudian slip', 'an unintentional error regarded as revealing subconscious feelings'], ['frivolity', 'lack of seriousness, light-heartedness'], ['gallant', 'courageous and chivalrous'], ['garish', 'obtrusively bright and showy, lurid'], ['gauche', 'unsophisticated and socially awkward'], ['genesis', 'the origin or coming into being'], ['germane', 'relevant to a subject under consideration'], ['gratuitous', 'done without good reason'], ['gregarious', 'fond of company, social'], ['gumption', 'shrewd or spirited initiative and resourcefulness'], ['haberdashery', 'small items used in sewing'], ['hamartia', 'tragic flaw'], ['hirsute', 'hairy'], ['heuristic', 'enabling someone to learn for themselves'], ['Hicksville', 'backwards, provincial place'], ['holistic', 'belief that the parts of something are interconnected and can only be explained by reference to the whole'], ['humdinger', 'remarkable thing of its kind'], ['iconoclastic', 'criticizing or attacking cherished beliefs or institutions'], ['idealism', 'the unrealistic pursuit of perfection'], ['idealist', 'a person guided more by ideals than practical considerations, someone who believes in idealism'], ['ignominious', 'deserving or causing public disgrace or shame'], ['ignominy', 'public shame or disgrace'], ['illustrious', 'well known, respected and admired for past achievements'], ['immutable', 'not capable or susceptible to change'], ['imperious', 'arrogant and domineering'], ['impertinence', 'lack of respect or rudeness'], ['impotence', "inability to take effective action, can't get an erection"], ['incitation', 'action to incite (encourage)'], ['incredulity', 'unwilling or unable to believe something'], ['incremental', 'relating to an increase'], ['indolence', 'avoidance of activity, laziness'], ['inebriated', 'drunk, intoxicated'], ['inglorious', 'causing shame or a loss of honour, not famous'], ['innocuous', 'not offensive or harmful'], ['inoculated', 'immunize'], ['inscrutable', 'impossible to understand or interpret'], ['insolent', 'showing a rude and arrogant lack of respect'], ['insouciance', 'casual lack of concern, indifference'], ['instigator', 'person who brings about or initiates something'], ['intrinsic', 'belonging naturally'], ['irreverent', 'showing a lack of respect for people or things that are generally taken seriously'], ['juxtaposition', 'showing contrast by comparison'], ['kitsch', 'stuff in poor taste because of excessive sentimentality or garishness but appreciated ironically or knowingly'], ['kleptocracy', "system ruled by people who use their power to steal their country's resources."], ['kudos', 'praise and honour due to an achievement'], ['laissez-faire', 'leaving people to do their own thing'], ['languid', 'disinclination for physical exertion'], ['libido', 'sexual desire'], ['liminal space', 'horror caused by a usually busy place devoid of people'], ['lingua franca', 'language adopted as a common language by people whose native languages differ'], ['macabre', 'disturbing because concerned with or causing a fear of death'], ['Machiavellian', 'sneaky, cunning and lacking moral code'], ['magnanimity', 'being magnanimous, generous'], ['magnanimous', 'generous or forgiving, especially towards a rival or less powerful person'], ['malice', 'ill-will, desire to harm'], ['melancholy', 'a feeling of pensive sadness, typically with no obvious cause'], ['melodrama', 'exaggerated or overemotional'], ['misanthrope', 'a person who dislikes humankind and avoids human society'], ['miser', 'someone who hoards wealth and spends as little as possible'], ['misophonia', 'condition characterised by an extreme emotional reaction to certain noises.'], ['morbid', 'unusual interest in disturbing or unpleasant subjects, or of the nature of disease'], ['mutatis mutandis', '(when comparing two or more situations or cases) making necessary alterations whilst not affecting the main point'], ['nadir', 'the lowest or most unsuccessful point in a situation'], ['nebulous', 'hazy, or a vague or ill-defined concept'], ['nirvana', 'an idyllic place, heaven'], ['nihilist', 'rejecting all religious and moral principles in the belief that life is meaningless'], ['noctivagant', 'wandering about at night'], ['obfuscate', 'make obscure or unclear, bewilder'], ['obnoxious', 'extremely unpleasant'], ['obsequious', 'obedient or attentive to an excessive or servile degree'], ['odious', 'extremely unpleasant, repulsive'], ['ostentatious', 'characterised by pretentious or showy display, designed to impress'], ['outspoken', "frank in stating one's opinions"], ['paean', 'a creative work expressing praise or triumph'], ['pagination', 'organising pages on a document'], ['pallid', 'pale face or lacking vigour or intensity'], ['palpable', '(of a feeling or atmosphere) so intense as to seem almost tangible'], ['panacea', 'a solution for all difficulties'], ['panache', 'flamboyant confidence of style'], ['par excellence', 'being the best of a kind'], ['paradigmatic', 'serving as a typical example of something'], ['pariah', 'an outcast'], ['parsimonious', 'very unwilling to spend money or resources'], ['parochial', 'having a limited outlook or scope'], ['pedantry', 'excessive concern with minor details and rules'], ['peevish', 'having or showing an irritable disposition'], ['pensive', 'involving deep thought'], ['perennial', 'lasting for a long or apparently infinite time, enduring or continually recurring'], ['pertains', 'appropriate or applicable to'], ['pertinent', 'relevant or applicable to a particular matter'], ['philistine', 'a person indifferent to the arts'], ['phlegmatic', 'having an unemotional and stolidly calm disposition'], ['pious', 'devoutly religious, a sincere hope unlikely to be fulfilled'], ['plaudit', 'expression of praise or approval'], ['plutocrat', 'someone whose power derives from their wealth'], ['poignant', 'evoking a keen sense of sadness'], ['pompous', 'affectedly grand, solemn or self-important'], ['posterity', 'all future generations of people'], ['priapic', 'relating to the phallus or male sexual activity'], ['profane', 'not religious or to not respect religious practice'], ['proprietor', 'the owner of a business of holder property'], ['proverbial', 'referred to in a proverb or idiom'], ['provincial', 'concerning a province of a country, sometimes outside of the capital when regarded as unsophisticated or narrow-minded'], ['prudent', 'acting with or showing care and thought for the future'], ['puckish', 'playful in a mischievous way'], ['punitive', 'intended as punishment, very high'], ['putz', 'a stupid or worthless person'], ['reactionary', 'opposing political or social progress or reform'], ['rebuke', 'express sharp disapproval or criticism because if their actions'], ['recherché', 'rare, exotic or obscure'], ['rectitude', 'morally correct behaviour or thinking'], ['refute', 'prove a statement to be wrong, deny or contradict'], ['reproach', "express disapproval of one's actions"], ['retcon', 'revise retrospectively'], ['rudimentary', 'involving or limited to basic principles'], ['sacrilege', 'violation or misuse of what is regarded as sacred'], ['sacrosanct', '(especially of a principle, place, or routine) regarded as too important or valuable to be interfered with'], ['sagacious', 'wise or shrewd'], ['salacious', 'conveying undue or inappropriate interest in sexual matters'], ['sanctimonious', 'making a show of being morally superior to other people'], ['schadenfreude', "pleasure derived from another's misfortune"], ['semantic', 'relating to meaning in language or logic'], ['seminal', 'strongly influencing later developments, relating to or denoting semen'], ['shrewd', 'having or showing sharp powers of judgement'], ['sincere', 'genuine'], ['Sloane', 'fashionable upper-class young woman'], ['slobbernocker', 'particularly hard-fought match'], ['snide', 'derogatory or mocking in an indirect way'], ['sobriety', 'the state of being sober'], ['solicit', 'ask for or try to obtain'], ['solivagant', 'solitary wandering'], ['solipsism', 'the quality of being very self-centred or selfish'], ['sordid', 'arousing moral distaste / squalid'], ['sploot', 'pose of a dog when it lies down with its back legs stretched out'], ['spoonerism', 'verbal error where speaker transposes a word with one that it sounds like'], ['squalor', 'dirty and unpleasant'], ['stoic', 'enduring hardship without showing their feelings or complaining'], ['strident', 'loud and harsh/grating, or presenting an often controversial opinion excessively forcefully'], ['suave', 'charming, confident and elegant'], ['superfluous', 'unnecessary, especially through being more than enough'], ['surreal', 'bizarre, to do with surrealism'], ['surrealism', 'physical representation of the mind'], ['surly', 'bad tempered and unfriendly'], ['syndication', 'the transfer of something for control or management'], ['tangible', 'perceptible by touch'], ['thalassophobia', 'fear of deep open water'], ['thalweg', "the main channel part of river that remains when it's low tide, a line connecting the lowest points of successive cross-sections along the course of a valley or river"], ['titillating', 'arousing mild sexual excitement or interest'], ['tohubohu', 'utter chaos or a state of confusion'], ['tosh', 'rubbish, nonsense'], ['transient', 'lasts for a short time'], ['trite', 'dull on account of overuse, lacking originality'], ['ubiquitous', 'present, appearing or found everywhere'], ['uncanny', 'strange in a disturbing way'], ['venerate', 'regard with great respect, revere'], ['verbatim', 'exactly the same words'], ['verbose', 'expressed in more words than needed'], ['vernacular', 'the language or dialect spoken by ordinary people in a particular region or place'], ['vindicate', 'clear of blame / prove to be right'], ['vitriolic', 'filled with bitter criticism or malice'], ['vivacious', 'attractively lively and animated'], ['vocation', "strong feeling of suitability for a particular role, or a person's employment if regarded worthy or requiring dedication"], ['vociferous', 'expressing or characterised by vehement opinions; loud and forceful'], ['weffling', 'noise a dog makes between a bark and a whine']];
+
+let deck = [];
+let current = 0;
+let seen = 0;
+
+function init() {
+    deck = [...flashcards];
+    current = 0;
+    seen = 0;
+    nextCard();
+}
+
+function nextCard() {
+    document.querySelector(".definition").style.display="none";
+    document.getElementById("nextBtn").style.display="none";
+    document.getElementById("revealBtn").style.display="block";
+
+    if(current >= deck.length) {
+        alert("Session complete!");
+        init();
+        return;
+    }
+
+    document.querySelector(".word").innerText = deck[current][0];
+    document.querySelector(".definition").innerText = deck[current][1];
+    document.getElementById("progress").innerText = 
+        "Card " + (current + 1) + " of " + deck.length;
+
+    current++;
+}
+
+function reveal() {
+    document.querySelector(".definition").style.display="block";
+    document.getElementById("nextBtn").style.display="block";
+    document.getElementById("revealBtn").style.display="none";
+}
+
+function shuffleDeck() {
+    deck.sort(()=>Math.random()-0.5);
+    current = 0;
+    nextCard();
+}
+
+init();
+</script>
+
+</body>
+</html>
